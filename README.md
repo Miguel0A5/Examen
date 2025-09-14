@@ -169,3 +169,138 @@ Con este trabajo el proyecto ahora cuenta con:
 * Gestión de estudiantes con inserción, eliminación y búsqueda eficiente mediante AVL.
 * Siete algoritmos de ordenamiento intercambiables para ordenar por diferentes campos.
 * Un submenú robusto y claro que mantiene la coherencia visual y lógica del menú principal.
+
+Módulo Incidencias – Gestión de incidentes con MinHeap
+=======================================================
+
+El tercer módulo del proyecto permite registrar, priorizar y atender incidencias en el campus mediante una **cola de prioridad implementada con un MinHeap**.  
+Su objetivo es asegurar que las incidencias más urgentes se atiendan primero, manteniendo tiempos de operación eficientes.
+
+Estructura y funcionamiento
+----------------------------
+El módulo se compone de las siguientes clases:
+
+* **Incidencia**
+  Representa una incidencia con los campos:
+  - `id` (int): identificador único de la incidencia.
+  - `titulo` (String): descripción breve del problema.
+  - `prioridad` (int): número que indica urgencia (1 = más alta, 10 = más baja).
+  - `timestamp` (long): marca de tiempo de creación.
+  Incluye getters, setters y `toString()`.
+
+* **MinHeapIncidencias**
+  Estructura de datos que implementa un **min-heap**, donde el nodo raíz siempre es la incidencia con menor número de prioridad (es decir, la más urgente).
+  Principales operaciones y su complejidad:
+  - `push` – Inserta una incidencia en O(log n).
+  - `pop` – Extrae la incidencia más urgente en O(log n).
+  - `peek` – Consulta la incidencia más urgente sin retirarla en O(1).
+  - `buildHeap` – Construye un heap a partir de una lista en O(n).
+  - `changePriority` – Cambia la prioridad de una incidencia y re-heapifica en O(log n).
+  El diseño garantiza que siempre se atienda primero el caso más urgente.
+
+* **IncidenciasMenu**
+  Es la interfaz de usuario para este módulo.
+  Permite insertar incidencias, cambiar prioridades, atender (pop), ver la siguiente (peek) y listar todas.
+  Mantiene el estilo `switch : break;` usado en los otros módulos para una navegación coherente.
+
+Submenú Incidencias
+-------------------
+Al elegir la opción **3** en el menú principal, se abre el siguiente submenú:
+
+--- MENÚ INCIDENCIAS ---
+1.- Insertar incidencia
+2.- Cambiar prioridad
+3.- Atender siguiente (pop)
+4.- Ver siguiente (peek)
+5.- Listar todas
+6.- Volver
+
+Las operaciones funcionan de la siguiente manera:
+
+* **Insertar incidencia** – Pide una ID numérica, el título del problema y un número de prioridad de 1 a 10 (1 = alta, 10 = baja).
+  La ID permite identificar la incidencia de manera única para posteriores cambios o seguimiento.
+* **Cambiar prioridad** – Solicita la ID y la nueva prioridad. Reubica el elemento en el heap sin necesidad de eliminarlo y volver a insertarlo.
+* **Atender siguiente (pop)** – Extrae y muestra la incidencia más urgente, eliminándola del heap.
+* **Ver siguiente (peek)** – Muestra la incidencia más urgente sin retirarla.
+* **Listar todas** – Muestra todas las incidencias registradas en el heap (el orden interno no es necesariamente de menor a mayor prioridad, ya que un heap solo garantiza la raíz como mínimo).
+* **Volver** – Regresa al menú principal.
+
+Decisión de diseño: MinHeap
+----------------------------
+Se eligió un **MinHeap** porque su raíz es siempre el elemento de **menor valor numérico**, lo cual se traduce en **mayor urgencia**.
+Esto permite atender las incidencias más críticas de forma natural y eficiente.
+
+Validaciones y experiencia de usuario
+-------------------------------------
+* Se validan las entradas para evitar `NumberFormatException`.
+* Durante la inserción se recuerda al usuario que la **ID debe ser solo numérica** y que la **prioridad va de 1 (alta) a 10 (baja)**.
+* En los cambios de prioridad, si la ID no existe, el sistema lo notifica claramente.
+
+Integración con el menú principal
+----------------------------------
+El `MenuPrincipal` invoca este módulo así:
+
+case 3:
+    IncidenciasMenu menuI = new IncidenciasMenu();
+    menuI.ejecutar();
+    break;
+
+De esta manera, el flujo y la apariencia se mantienen consistentes con los módulos **Campus** y **Estudiantes**.
+
+Progreso alcanzado
+-------------------
+Con la implementación del módulo Incidencias, el proyecto ahora cuenta con:
+* Un sistema de registro de incidencias totalmente funcional.
+* Priorización automática basada en un **MinHeap**.
+* Operaciones de inserción, extracción, consulta y re-priorización con las complejidades requeridas.
+* Interfaz de consola coherente y robusta.
+
+Cuarta parte del README – Integración final de menús y datos compartidos
+====================================================================
+
+Integración de módulos y persistencia de datos
+----------------------------------------------
+En la fase final del proyecto se unificó el manejo de datos entre todos los módulos.  
+Hasta este punto, cada submenú (Campus, Estudiantes, Incidencias) creaba sus propias estructuras internas, lo que impedía que la información se compartiera entre módulos o se pudiera consultar de manera global en Reportes.
+
+Para resolverlo, se modificó el MenuPrincipal de modo que:
+
+* Mantiene únicas instancias globales:
+  - ManejoEstudiantes manejoEstudiantes
+  - MinHeapIncidencias heapIncidencias
+  - CampusGrafo campusGrafo
+* Pasa estas instancias a cada submenú en sus constructores.  
+  Por ejemplo:
+  Campus campus1 = new Campus(campusGrafo);
+  EstudiantesMenu em1 = new EstudiantesMenu(manejoEstudiantes);
+  IncidenciasMenu menuI = new IncidenciasMenu(heapIncidencias);
+  ReportesMenu reportes = new ReportesMenu(manejoEstudiantes, heapIncidencias, campusGrafo);
+
+De este modo todos los módulos trabajan sobre el mismo conjunto de datos.
+
+Ajustes de constructores en los submenús
+-----------------------------------------
+Para permitir esta integración se modificaron las clases:
+
+* Campus: ahora recibe CampusGrafo por parámetro, evitando crear un grafo nuevo en cada sesión.
+* EstudiantesMenu: ahora recibe ManejoEstudiantes, de modo que las altas, bajas y búsquedas se hacen sobre la misma estructura que verá el módulo Reportes.
+* IncidenciasMenu: ahora recibe MinHeapIncidencias, garantizando que las incidencias insertadas se mantengan y sean visibles desde Reportes.
+
+Estos cambios aseguran que la información sea persistente durante toda la ejecución del programa, sin perder datos al navegar entre menús.
+
+Convenciones para Scanner
+-------------------------
+Para una mejor organización se definió una convención de nombres en los objetos Scanner:
+* En el MenuPrincipal se mantiene el nombre entrada, ya que es el punto de inicio de toda la aplicación.
+* En los submenús (Campus, Estudiantes, Incidencias, Reportes) se utiliza el nombre sc.  
+  Esta decisión permite diferenciar claramente la fuente principal de entrada (entrada) de los lectores locales (sc) en cada módulo.
+
+Resultado final
+---------------
+Con estos ajustes:
+
+* El módulo Reportes puede acceder a los datos globales para:
+  - Medir tiempos de ordenamiento de estudiantes.
+  - Obtener métricas de rutas y costo del árbol de expansión mínima del campus.
+  - Conocer el tamaño actual de cada estructura de datos.
+* Todos los módulos (Campus, Estudiantes, Incidencias y Reportes) operan sobre estructuras de datos únicas y compartidas, asegurando coherencia y persistencia.

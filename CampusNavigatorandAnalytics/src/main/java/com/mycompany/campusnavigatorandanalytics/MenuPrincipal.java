@@ -1,9 +1,13 @@
-
 package com.mycompany.campusnavigatorandanalytics;
+
 import java.util.*;
 
-
 public class MenuPrincipal {
+
+    // --- Instancias compartidas entre todos los módulos ---
+    private final ManejoEstudiantes manejoEstudiantes = new ManejoEstudiantes();
+    private final MinHeapIncidencias heapIncidencias = new MinHeapIncidencias();
+    private final CampusGrafo campusGrafo = new CampusGrafo();
 
     public void ejecutar() {
         Scanner entrada = new Scanner(System.in);
@@ -20,19 +24,28 @@ public class MenuPrincipal {
                 opcion = Integer.parseInt(entrada.nextLine());
                 switch (opcion) {
                     case 1:
-                        Campus campus1 = new Campus();
+                        // Se pasa la instancia compartida del grafo
+                        Campus campus1 = new Campus(campusGrafo);
                         campus1.ejecutar();
                         break;
 
                     case 2:
-                        EstudiantesMenu em1 = new EstudiantesMenu();
+                        // Se pasa la instancia compartida de manejo de estudiantes
+                        EstudiantesMenu em1 = new EstudiantesMenu(manejoEstudiantes);
                         em1.ejecutar();
                         break;
 
                     case 3:
+                        // Se pasa la instancia compartida del heap de incidencias
+                        IncidenciasMenu menuI = new IncidenciasMenu(heapIncidencias);
+                        menuI.ejecutar();
                         break;
 
                     case 4:
+                        System.out.println("De preferencia haga uso de esta opcíon hasta el final");
+                        // Se pasan las tres instancias para generar reportes globales
+                        ReportesMenu reportes = new ReportesMenu(manejoEstudiantes, heapIncidencias, campusGrafo);
+                        reportes.ejecutar();
                         break;
 
                     case 5:
@@ -41,6 +54,7 @@ public class MenuPrincipal {
 
                     default:
                         System.out.println("Valor no válido");
+                        break;
                 }
             } catch (NumberFormatException e) {
                 System.out.println("Entrada no válida, intente de nuevo.");
