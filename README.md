@@ -76,3 +76,96 @@ Durante el desarrollo surgieron varios problemas clave, que quedaron solucionado
 - Qué hace cada opción del menú: Se explicó que la opción 5 no calcula nada, solo sale del bucle; la opción 4 llama a kruskal() y calcula la conexión mínima entre todos los edificios.
 - Cómo funciona el cálculo de Kruskal: Se detalló que el algoritmo ordena las aristas por peso, usa UnionFind para evitar ciclos, selecciona las aristas más baratas y acumula el costo total.
 - Cómo asegurar compatibilidad con Java 8: Se reemplazó Map.entry() por AbstractMap.SimpleEntry en Dijkstra.
+
+
+Módulo Estudiantes – Árbol AVL y Ordenamientos
+==============================================
+
+El segundo gran avance del proyecto ha sido el desarrollo completo del **Módulo Estudiantes**, que permite administrar un registro de alumnos con estructura de árbol auto-balanceado (AVL) y múltiples algoritmos de ordenamiento.
+
+Estructura y funcionamiento
+----------------------------
+El módulo se ubica en el paquete `com.mycompany.campusnavigatorandanalytics` y consta de las siguientes clases:
+
+* **Estudiante**
+  Modelo de datos con atributos `id` (int), `nombre` (String), `carrera` (String) y `promedio` (double).
+  Incluye getters, setters y `toString()` para una salida legible.
+
+* **AVLTree**
+  Árbol de búsqueda auto-balanceado que permite inserción, eliminación y búsqueda por id en tiempo O(log n).
+  Cada nodo almacena un objeto `Estudiante` y se rebalancea mediante rotaciones simples o dobles según sea necesario.
+
+* **ManejoEstudiantes**
+  Actúa como capa de servicio: inserta y elimina estudiantes en el AVL, realiza búsquedas por id, permite búsqueda lineal por nombre y mantiene una lista auxiliar para aplicar los distintos algoritmos de ordenamiento.
+
+* **Ordenamiento (interfaz)**
+  Define el método `sort(List<Estudiante> list, String campo)` que deben implementar todos los algoritmos de ordenamiento.
+
+* **Algoritmos de ordenamiento**
+  Implementados cada uno en su propia clase:
+  `InsertionSort`, `SelectionSort`, `ShellSort`, `QuickSort`, `MergeSort`, `HeapSort` y `RadixSort`.
+  Todos cumplen con la interfaz `Ordenamiento` y permiten ordenar por `id`, `nombre` o `promedio`, excepto `RadixSort`, que solo se aplica a `id`.
+
+* **EstudiantesMenu**
+  Es el submenú que interactúa con el usuario. Gestiona las operaciones de alta, baja, búsqueda y ordenamiento.
+  Mantiene el estilo de `switch : break;` usado en todo el proyecto para facilitar la lectura.
+
+Submenú Estudiantes
+-------------------
+Cuando el usuario selecciona la opción *Estudiantes* en el menú principal, se abre el siguiente submenú:
+
+--- MENÚ ESTUDIANTES ---
+1.- Alta de estudiante
+2.- Baja de estudiante
+3.- Búsqueda por ID
+4.- Búsqueda por nombre
+5.- Ordenar (elige algoritmo + campo)
+6.- Volver
+
+* **Alta**: solicita id, nombre, carrera y promedio, e inserta el estudiante en el AVL y en la lista.
+* **Baja**: pide el id y elimina el registro si existe.
+* **Búsqueda por ID**: consulta el AVL en tiempo logarítmico.
+* **Búsqueda por nombre**: búsqueda lineal en la lista de estudiantes.
+* **Ordenar**: permite elegir el campo (`id`, `nombre` o `promedio`) y el algoritmo de ordenamiento deseado (`insertion`, `selection`, `shell`, `quick`, `merge`, `heap`, `radix`).
+
+La opción 6 imprime “Regresando…” y vuelve al menú principal.
+
+Detalle de los algoritmos de ordenamiento
+------------------------------------------
+Todos los algoritmos trabajan sobre una copia de la lista de estudiantes:
+
+| Algoritmo      | Complejidad promedio | Características principales |
+|----------------|-----------------------|------------------------------|
+| **InsertionSort** | O(n²) | Simple, adecuado para listas pequeñas. |
+| **SelectionSort** | O(n²) | Selecciona el mínimo en cada pasada. |
+| **ShellSort** | O(n log² n) aprox. | Mejora de Insertion, usa intervalos decrecientes. |
+| **QuickSort** | O(n log n) promedio | Divide y conquista; muy eficiente en la práctica. |
+| **MergeSort** | O(n log n) | Estable, buen rendimiento en datos grandes. |
+| **HeapSort** | O(n log n) | Basado en un heap binario, garantiza O(n log n). |
+| **RadixSort** | O(n k) | Ordena enteros por dígitos, aplicado solo a `id`. |
+
+El patrón **Strategy** permite intercambiar de manera transparente el algoritmo de ordenamiento sin modificar el resto del código.
+
+Validaciones y robustez
+-----------------------
+* Se valida cada entrada para evitar excepciones (por ejemplo `NumberFormatException`).
+* Si se intenta ordenar por `RadixSort` un campo distinto de `id`, se muestra un aviso y no se ejecuta.
+* En búsquedas por nombre o id se avisa claramente si no se encuentra el estudiante.
+
+Integración con el Menú Principal
+----------------------------------
+En `MenuPrincipal` se añadió la llamada:
+
+case 2:
+    EstudiantesMenu menuE = new EstudiantesMenu();
+    menuE.ejecutar();
+    break;
+
+Esto enlaza el módulo Estudiantes con la misma lógica de navegación que el módulo Campus.
+
+Progreso alcanzado
+-------------------
+Con este trabajo el proyecto ahora cuenta con:
+* Gestión de estudiantes con inserción, eliminación y búsqueda eficiente mediante AVL.
+* Siete algoritmos de ordenamiento intercambiables para ordenar por diferentes campos.
+* Un submenú robusto y claro que mantiene la coherencia visual y lógica del menú principal.
