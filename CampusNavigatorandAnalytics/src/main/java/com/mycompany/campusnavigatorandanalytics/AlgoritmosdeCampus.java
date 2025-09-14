@@ -1,4 +1,5 @@
 package com.mycompany.campusnavigatorandanalytics;
+
 import java.util.*;
 
 public class AlgoritmosdeCampus {
@@ -6,7 +7,9 @@ public class AlgoritmosdeCampus {
     // --- BFS: recorrido en anchura ---
     public static List<String> bfs(CampusGrafo g, String start) {
         List<String> order = new ArrayList<>();
-        if (!g.getVertices().contains(start)) return order; // valida existencia
+        if (!g.getVertices().contains(start)) {
+            return order; // valida existencia
+        }
         Set<String> visited = new HashSet<>();
         Queue<String> q = new LinkedList<>();
         q.add(start);
@@ -17,8 +20,10 @@ public class AlgoritmosdeCampus {
             order.add(u);
             // ✅ Evita NullPointer si u no tiene vecinos
             for (AristasCampusGrafo e : g.getAdjacencyList()
-                                         .getOrDefault(u, Collections.emptyList())) {
-                if (visited.add(e.destino)) q.add(e.destino);
+                    .getOrDefault(u, Collections.emptyList())) {
+                if (visited.add(e.destino)) {
+                    q.add(e.destino);
+                }
             }
         }
         return order;
@@ -34,11 +39,13 @@ public class AlgoritmosdeCampus {
 
     // método auxiliar recursivo para DFS
     private static void dfsRec(CampusGrafo g, String v, Set<String> visited, List<String> order) {
-        if (!visited.add(v)) return;
+        if (!visited.add(v)) {
+            return;
+        }
         order.add(v);
         // ✅ Evita NullPointer si v no existe o no tiene vecinos
         for (AristasCampusGrafo e : g.getAdjacencyList()
-                                     .getOrDefault(v, Collections.emptyList())) {
+                .getOrDefault(v, Collections.emptyList())) {
             dfsRec(g, e.destino, visited, order);
         }
     }
@@ -53,12 +60,14 @@ public class AlgoritmosdeCampus {
         // creación de estructuras de distancias y predecesores
         Map<String, Double> dist = new HashMap<>();
         Map<String, String> prev = new HashMap<>();
-        for (String v : g.getVertices()) dist.put(v, Double.POSITIVE_INFINITY);
+        for (String v : g.getVertices()) {
+            dist.put(v, Double.POSITIVE_INFINITY);
+        }
         dist.put(origen, 0.0);
 
         // cola de prioridad por menor distancia (compatible Java 8+)
-        PriorityQueue<AbstractMap.SimpleEntry<String, Double>> pq =
-            new PriorityQueue<>(Comparator.comparing(AbstractMap.SimpleEntry::getValue));
+        PriorityQueue<AbstractMap.SimpleEntry<String, Double>> pq
+                = new PriorityQueue<>(Comparator.comparing(AbstractMap.SimpleEntry::getValue));
         pq.add(new AbstractMap.SimpleEntry<>(origen, 0.0));
 
         // lógica principal de relajación de aristas
@@ -66,7 +75,7 @@ public class AlgoritmosdeCampus {
             String u = pq.poll().getKey();
             // ✅ Evita NullPointer si u no tiene vecinos
             for (AristasCampusGrafo e : g.getAdjacencyList()
-                                         .getOrDefault(u, Collections.emptyList())) {
+                    .getOrDefault(u, Collections.emptyList())) {
                 double nd = dist.get(u) + e.peso;
                 if (nd < dist.get(e.destino)) {
                     dist.put(e.destino, nd);
@@ -86,7 +95,9 @@ public class AlgoritmosdeCampus {
         List<String> path = new ArrayList<>();
         for (String at = destino; at != null; at = prev.get(at)) {
             path.add(at);
-            if (at.equals(origen)) break;
+            if (at.equals(origen)) {
+                break;
+            }
         }
         Collections.reverse(path);
 
@@ -100,7 +111,7 @@ public class AlgoritmosdeCampus {
         List<AristasCampusGrafoMST> AristasCampusGrafos = new ArrayList<>();
         for (String u : g.getVertices()) {
             for (AristasCampusGrafo e : g.getAdjacencyList()
-                                         .getOrDefault(u, Collections.emptyList())) {
+                    .getOrDefault(u, Collections.emptyList())) {
                 if (u.compareTo(e.destino) < 0) { // evita doble registro
                     AristasCampusGrafos.add(new AristasCampusGrafoMST(u, e.destino, e.peso));
                 }
@@ -132,26 +143,73 @@ public class AlgoritmosdeCampus {
 
     // --- Clases internas para Kruskal ---
     private static class AristasCampusGrafoMST {
+
         String u, v;
         double peso;
-        AristasCampusGrafoMST(String u, String v, double p) { this.u=u; this.v=v; this.peso=p; }
-        public String toString() { return u + " - " + v + " : " + peso; }
+
+        AristasCampusGrafoMST(String u, String v, double p) {
+            this.u = u;
+            this.v = v;
+            this.peso = p;
+        }
+
+        public String toString() {
+            return u + " - " + v + " : " + peso;
+        }
     }
 
     // estructura Union-Find: detecta ciclos en Kruskal
     private static class UnionFind {
+
         private final Map<String, String> parent = new HashMap<>();
-        UnionFind(Set<String> verts) { for (String v : verts) parent.put(v, v); }
+
+        UnionFind(Set<String> verts) {
+            for (String v : verts) {
+                parent.put(v, v);
+            }
+        }
+
         String find(String x) {
-            if (!parent.get(x).equals(x)) parent.put(x, find(parent.get(x)));
+            if (!parent.get(x).equals(x)) {
+                parent.put(x, find(parent.get(x)));
+            }
             return parent.get(x);
         }
+
         boolean union(String a, String b) {
             String ra = find(a), rb = find(b);
-            if (ra.equals(rb)) return false; // ya conectados
+            if (ra.equals(rb)) {
+                return false; // ya conectados
+            }
             parent.put(ra, rb);
             return true;
         }
     }
-}
 
+    // --- Método auxiliar para Reportes: calcula solo el costo del MST ---
+    public static double kruskalCosto(CampusGrafo g) {
+        List<AristasCampusGrafoMST> edges = new ArrayList<>();
+        for (String u : g.getVertices()) {
+            for (AristasCampusGrafo e : g.getAdjacencyList().get(u)) {
+                if (u.compareTo(e.destino) < 0) { // evitar duplicados
+                    edges.add(new AristasCampusGrafoMST(u, e.destino, e.peso));
+                }
+            }
+        }
+        edges.sort(Comparator.comparingDouble(a -> a.peso));
+
+        UnionFind uf = new UnionFind(g.getVertices());
+        double totalCost = 0;
+        List<AristasCampusGrafoMST> mst = new ArrayList<>();
+
+        for (AristasCampusGrafoMST e : edges) {
+            if (uf.union(e.u, e.v)) {
+                mst.add(e);
+                totalCost += e.peso;
+            }
+        }
+        // si el MST no conecta todos los vértices, igual devuelve el costo parcial
+        return totalCost;
+    }
+
+}

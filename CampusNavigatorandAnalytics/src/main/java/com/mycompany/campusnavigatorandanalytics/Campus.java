@@ -1,16 +1,20 @@
-
 package com.mycompany.campusnavigatorandanalytics;
-
 import java.util.*;
 
 public class Campus {
+    
+    private final CampusGrafo grafo;
+    // Se recibe el grafo compartido
+    public Campus(CampusGrafo grafo) {
+        this.grafo = grafo;
+        cargarGrafoDemo();
+    }
 
-    private CampusGrafo grafo = new CampusGrafo();
-
+    
     public void ejecutar() {
         Scanner entrada = new Scanner(System.in);
         int opcion = -1;
-        cargarGrafoDemo();
+        
         do {
             System.out.println("\n--- MENÚ CAMPUS ---");
             System.out.println("Hay un ejemplo precargado para realizar las pruebas con EdificioA, B, C y D");
@@ -25,20 +29,20 @@ public class Campus {
                 switch (opcion) {
                     case 1:
                         ejecutarBFS(entrada);
-                        break;                      
+                        break;
                     case 2:
                         ejecutarDFS(entrada);
                         break;
-                    case 3: 
+                    case 3:
                         ejecutarDijkstra(entrada);
                         break;
                     case 4:
                         AlgoritmosdeCampus.kruskal(grafo);
                         break;
-                    case 5: 
+                    case 5:
                         System.out.println("Regresando...");
                         break;
-                    default: 
+                    default:
                         System.out.println("Opción no válida");
                         break;
                 }
@@ -50,21 +54,17 @@ public class Campus {
 
     // --- Cargar un grafo de ejemplo ---
     private void cargarGrafoDemo() {
-        grafo = new CampusGrafo();
         grafo.addAristasCampusGrafo("EdificioA", "EdificioB", 4);
         grafo.addAristasCampusGrafo("EdificioA", "EdificioC", 2);
         grafo.addAristasCampusGrafo("EdificioB", "EdificioC", 5);
         grafo.addAristasCampusGrafo("EdificioB", "EdificioD", 10);
         grafo.addAristasCampusGrafo("EdificioC", "EdificioD", 3);
-        System.out.println("Grafo de ejemplo cargado.");
     }
 
-    // --- Ejecutar BFS con validación ---
     private void ejecutarBFS(Scanner sc) {
         System.out.print("Edificio inicial: ");
         String start = sc.nextLine();
         List<String> recorrido = AlgoritmosdeCampus.bfs(grafo, start);
-
         if (recorrido.isEmpty()) {
             System.out.println("No se encontró el edificio '" + start +
                     "'. Edificios disponibles: " + grafo.getVertices());
@@ -73,12 +73,10 @@ public class Campus {
         }
     }
 
-    // --- Ejecutar DFS con validación ---
     private void ejecutarDFS(Scanner sc) {
         System.out.print("Edificio inicial: ");
         String start = sc.nextLine();
         List<String> recorrido = AlgoritmosdeCampus.dfs(grafo, start);
-
         if (recorrido.isEmpty()) {
             System.out.println("No se encontró el edificio '" + start +
                     "'. Edificios disponibles: " + grafo.getVertices());
@@ -87,7 +85,6 @@ public class Campus {
         }
     }
 
-    // --- Ejecutar Dijkstra con validación ---
     private void ejecutarDijkstra(Scanner sc) {
         System.out.print("Origen: ");
         String origen = sc.nextLine();
@@ -102,4 +99,3 @@ public class Campus {
         AlgoritmosdeCampus.dijkstra(grafo, origen, destino);
     }
 }
-

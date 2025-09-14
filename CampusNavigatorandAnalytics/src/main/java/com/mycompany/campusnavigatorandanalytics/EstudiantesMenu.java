@@ -1,14 +1,18 @@
 package com.mycompany.campusnavigatorandanalytics;
-
 import java.util.*;
 
 public class EstudiantesMenu {
-
-    private final ManejoEstudiantes manejo1 = new ManejoEstudiantes();
+    
+    private final ManejoEstudiantes manejo1;
+    // Recibe la instancia compartida
+    public EstudiantesMenu(ManejoEstudiantes manejo1) {
+        this.manejo1 = manejo1;
+    }
 
     public void ejecutar() {
         Scanner sc = new Scanner(System.in);
         int opcion = 0;
+        
         do {
             System.out.println("\n--- MENÚ ESTUDIANTES ---");
             System.out.println("1.- Alta de estudiante");
@@ -95,7 +99,6 @@ public class EstudiantesMenu {
         System.out.println("Algoritmo (insertion / selection / shell / quick / merge / heap / radix): ");
         String alg = sc.nextLine().toLowerCase();
 
-        // 🔑 Todos los algoritmos de ordenamiento disponibles
         Ordenamiento strategy = switch (alg) {
             case "insertion" -> new InsertionSort();
             case "selection" -> new SelectionSort();
