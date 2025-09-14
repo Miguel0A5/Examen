@@ -25,6 +25,8 @@ public class MenuPrincipal {
                         break;
 
                     case 2:
+                        EstudiantesMenu em1 = new EstudiantesMenu();
+                        em1.ejecutar();
                         break;
 
                     case 3:
