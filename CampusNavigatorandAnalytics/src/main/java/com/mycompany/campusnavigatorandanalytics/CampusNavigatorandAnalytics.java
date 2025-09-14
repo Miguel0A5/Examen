@@ -4,10 +4,6 @@
 
 package com.mycompany.campusnavigatorandanalytics;
 
-/**
- *
- * @author migue
- */
 public class CampusNavigatorandAnalytics {
 
     public static void main(String[] args) {
