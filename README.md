@@ -1,2 +1,2 @@
 # Examen
-Este examen pondrá a prueba tu capacidad para implementar en Java las estructuras y algoritmos estudiados en clase. Resuelve cada ejercicio escribiendo código claro, bien estructurado y comentado cuando sea necesario
+Este examen pondrá a prueba tu capacidad para implementar en Java las estructuras y algoritmos estudiados en clase. Resuelve cada ejercicio escribiendo código claro, bien estructurado y comentado cuando sea necesario (Nota, siga las carpteas que hay en el repositorio, ya que el programa fué iniciado en Netbeans, por lo que genera en automáticos los archivos necesarios para su ejecucíon, anque de todas formas funciona en cualquier herramienta)
